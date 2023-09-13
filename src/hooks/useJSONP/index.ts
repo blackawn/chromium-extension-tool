@@ -3,7 +3,7 @@ import type { SearchEngineName } from '@/store/searchEngine/types'
 
 export function useJSONP(engine: SearchEngineName = 'baidu', value: string) {
 
-  const [suggestionResult, setSuggestionResult] = useState<Array<string>>()
+  const [suggestionResult, setSuggestionResult] = useState<Array<string>>([])
 
   useEffect(() => {
 

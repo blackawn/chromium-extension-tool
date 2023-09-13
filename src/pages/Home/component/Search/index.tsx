@@ -12,7 +12,7 @@ interface SearchEngineProps {
 
 }
 
-const SearchEngine = (props: unknown) => {
+const SearchEngine = () => {
 
   const searchEngineList = useMemo<SearchEngine[]>(() => ([
     {
@@ -41,7 +41,7 @@ const SearchEngine = (props: unknown) => {
       tabIndex={0}
     >
       <div
-        className='h-11 w-11 cursor-pointer rounded-full p-1.5 hover:bg-neutral-500/20'
+        className='h-10 w-10 cursor-pointer rounded-full p-1.5 hover:bg-neutral-500/20'
       >
         <img
           alt=''
@@ -83,98 +83,6 @@ const SearchEngine = (props: unknown) => {
   )
 }
 
-interface SearchBarProps {
-  modifySuggestion: (data: Array<string>) => void
-}
-
-const SearchBar = (props: SearchBarProps) => {
-
-  const [value, setValue] = useState('')
-
-  const [keyword, setKeyword] = useState('')
-
-  const { searchEngine } = useSearchEngineStore()
-
-  const { suggestionResult } = useJSONP(searchEngine, keyword)
-
-  const timer = useRef<ReturnType<typeof setTimeout>>()
-
-  useEffect(() => {
-    if (value.trim() === '') {
-      setKeyword('')
-      props.modifySuggestion([])
-    } else {
-      props.modifySuggestion(suggestionResult as string[])
-    }
-  }, [suggestionResult, value])
-  
-  const onInput = (value: string) => {
-
-    setValue(value)
-
-    clearTimeout(timer.current)
-
-    timer.current = setTimeout(() => {
-      setKeyword(value)
-    }, 500)
-  }
-
-  return (
-    <div
-      className='flex flex-1'
-    >
-      <div
-        className='flex-1'
-      >
-        <input
-          autoComplete=''
-          className='h-full w-full bg-transparent text-lg tracking-wide outline-none'
-          onChange={(e) => onInput(e.target.value)}
-          placeholder=''
-          type='text'
-          value={value}
-        />
-
-      </div>
-      <div
-        className={clsx([
-          'flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-xl duration-300 hover:bg-neutral-500/20',
-          ((value.trim().length > 0) ? 'visible scale-100 opacity-100' : 'invisible scale-0 opacity-0')
-        ])}
-        onClick={() => setValue('')}
-      >
-        <Icon
-          icon='ic:round-close'
-        />
-      </div>
-    </div>
-  )
-}
-
-interface SearchSuggestionProps {
-  data: Array<string>
-}
-
-const SearchSuggestion = (props: SearchSuggestionProps) => {
-  return (
-    (props.data.length > 0) && (
-      <div
-        className='absolute left-0 top-full mt-2 flex w-full flex-col rounded-md bg-neutral-800 p-4 py-1'
-      >
-        {
-          props.data.map((item, i) => (
-            <div
-              key={i}
-            >
-              {item}
-            </div>
-          ))
-        }
-      </div>
-    )
-  )
-}
-
 const SearchJump = () => {
   return (
     <div
@@ -189,20 +97,140 @@ const SearchJump = () => {
 
 export const Search = () => {
 
-  const [suggestionResult, setSuggestionResult] = useState<Array<string>>([])
+  const [value, setValue] = useState('')
+
+  const [keyword, setKeyword] = useState('')
+
+  const { searchEngine } = useSearchEngineStore()
+
+  const { suggestionResult } = useJSONP(searchEngine, keyword)
+
+  const timer = useRef<ReturnType<typeof setTimeout>>()
+
+  const [selectIndex, setSelectIndex] = useState(-1)
+
+  useEffect(() => {
+    if (value.trim() === '') {
+      setKeyword('')
+    }
+  }, [value])
+
+  const onChange = (value: string) => {
+
+    setValue(value)
+
+    clearTimeout(timer.current)
+
+    timer.current = setTimeout(() => {
+      setKeyword(value)
+    }, 500)
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+
+    if (suggestionResult.length <= 0) return
+
+    if (event.code === 'ArrowDown' && event.key === 'ArrowDown') {
+      setSelectIndex((prev) => {
+        const p = (prev >= (suggestionResult.length - 1)) ? 0 : ++prev
+
+        setValue(suggestionResult[p])
+
+        return p
+      })
+    } else if (event.code === 'ArrowUp' && event.key === 'ArrowUp') {
+
+      event.preventDefault()
+
+      setSelectIndex((prev) => {
+        const p = (prev <= 0) ? (suggestionResult.length - 1) : --prev
+
+        setValue(suggestionResult[p])
+
+        return p
+      })
+    }
+  }
 
   return (
     <div
-      className='relative flex w-[28vw] items-center gap-x-1 rounded-full px-3 py-2 dark:bg-neutral-800'
+      className={clsx([
+        'relative flex w-96 items-center gap-x-1 px-2 py-1.5 dark:bg-neutral-800',
+        (((suggestionResult.length) > 0) ? 'rounded-t-lg' : 'rounded-lg')
+      ])}
+      tabIndex={0}
     >
       <SearchEngine />
-      <SearchBar
-        modifySuggestion={(data) => setSuggestionResult(data)}
-      />
+      {/* Input */}
+      <div
+        className='flex-1'
+      >
+        <input
+          autoComplete=''
+          className='h-full w-full bg-transparent text-base tracking-wide outline-none'
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setKeyword(value)}
+          onKeyDown={(e) => handleKeyDown(e)}
+          placeholder=''
+          type='text'
+          value={value}
+        />
+
+      </div>
+      {/* Clear */}
+      <div
+        className={clsx([
+          'flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-xl duration-300 hover:bg-neutral-500/20',
+          ((value.length > 0) ? 'visible scale-100 opacity-100' : 'invisible scale-0 opacity-0')
+        ])}
+        onClick={() => setValue('')}
+      >
+        <Icon
+          icon='ic:round-close'
+        />
+      </div>
+      {/* Search */}
       <SearchJump />
-      <SearchSuggestion
-        data={suggestionResult || []}
-      />
+      {/* Suggestion */}
+      <div
+        className={clsx([
+          'absolute left-0 top-full w-full rounded-b-lg bg-neutral-800 pb-2',
+          ((suggestionResult.length > 0) ? 'visible opacity-100 ' : 'invisible opacity-0')
+        ])}
+      >
+        <div
+          className='flex max-h-96 flex-col overflow-x-hidden'
+        >
+          {
+            suggestionResult?.map((item, index) => (
+              <div
+                className={clsx([
+                  'flex cursor-pointer items-center justify-between px-4 py-1',
+                  { 'bg-neutral-500/20': (selectIndex === index) }
+                ])}
+                key={item}
+                onMouseEnter={() => setSelectIndex(index)}
+                onMouseLeave={() => setSelectIndex(-1)}
+              >
+                <span>
+                  {item}
+                </span>
+                <div
+                  className={clsx([
+                    'rounded-full p-1 text-xl hover:bg-neutral-500/60',
+                    ((selectIndex === index) ? 'visible' : 'invisible scale-0 opacity-0')
+                  ])}
+                  onClick={() => setValue(item)}
+                >
+                  <Icon
+                    icon='iconamoon:arrow-top-left-1'
+                  />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
     </div>
   )
 }
