@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { SearchEngineName } from '@/store/searchEngine/types'
 
-export function useJSONP(engine: SearchEngineName = 'baidu', value: string) {
+export function useSuggestion(engine: SearchEngineName = 'baidu', value: string) {
 
   const [suggestionResult, setSuggestionResult] = useState<Array<string>>([])
 

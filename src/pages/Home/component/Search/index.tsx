@@ -2,38 +2,55 @@ import icon_baidu from '@/assets/baidu.svg'
 import icon_bing from '@/assets/bing.svg'
 import icon_google from '@/assets/google.svg'
 import { Icon } from '@iconify/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchEngineStore } from '@/store/searchEngine'
+import { useCallback, useImperativeHandle, forwardRef, memo, useEffect, useMemo, useRef, useState } from 'react'
 import { clsx } from 'clsx'
-import { useJSONP } from '@/hooks/useJSONP'
+import { useSearchEngineStore } from '@/store/searchEngine'
+import { useStateCallback } from '@/hooks/useStateCallback'
+import { useSuggestion } from '@/hooks/useSuggestion'
+import { useMouseLongPress } from '@/hooks/useMouseLongPress'
 import type { SearchEngine } from '@/store/searchEngine/types'
+import { resolve } from 'path'
 
-interface SearchEngineProps {
-
+/**
+ * SearchEngine
+ */
+interface SearchEngineRef {
+  url: string
 }
 
-const SearchEngine = () => {
+const SearchEngine = memo(forwardRef<SearchEngineRef>((props, ref) => {
 
   const searchEngineList = useMemo<SearchEngine[]>(() => ([
     {
       icon: icon_baidu,
-      name: 'baidu'
+      name: 'baidu',
+      url: 'https://www.baidu.com/s?wd='
     },
     {
       icon: icon_bing,
-      name: 'bing'
+      name: 'bing',
+      url: 'https://www.bing.com/search?q='
     },
     {
       icon: icon_google,
-      name: 'google'
+      name: 'google',
+      url: 'https://www.google.com/search?q='
     }
   ]), [])
 
+  console.log('init search engine')
+
   const { searchEngine, modifySearchEngine } = useSearchEngineStore()
 
-  const currentEngine = useMemo(() => {
-    return searchEngineList.find((obj) => obj.name === searchEngine)?.icon
-  }, [searchEngine, searchEngineList])
+  const currentSearchEngine = useMemo(() => {
+    return searchEngineList.find((obj) => obj.name === searchEngine)
+  }, [searchEngine])
+
+  useImperativeHandle(ref, () => {
+    return {
+      url: currentSearchEngine?.url as string
+    }
+  })
 
   return (
     <div
@@ -46,7 +63,7 @@ const SearchEngine = () => {
         <img
           alt=''
           className='h-full w-full object-cover'
-          src={currentEngine}
+          src={currentSearchEngine?.icon}
         />
       </div>
       <div
@@ -81,33 +98,83 @@ const SearchEngine = () => {
       </div>
     </div>
   )
+}))
+
+SearchEngine.displayName = 'SearchEngine'
+
+interface SearchRedirectProps {
+  url?: string
+  value?: string
 }
 
-const SearchJump = () => {
+interface SearchRedirectRef {
+  redirect: (newTab?: boolean) => void
+}
+
+/**
+ * SearchRedirect
+ */
+const SearchRedirect = forwardRef<SearchRedirectRef, SearchRedirectProps>((props, ref) => {
+
+  const toSearch = (newTab?: boolean) => {
+
+    if (props?.value?.trim() === '') return
+
+    const redirectUrl = (props.url as string) + (props.value as string)
+
+    if (newTab) {
+      window.open(redirectUrl, '_blank')
+    } else {
+      window.location.href = redirectUrl
+    }
+  }
+
+  const mouseLongPress = useMouseLongPress(() => toSearch(true))
+
+  //console.log('SearchRedirect')
+
+  useImperativeHandle(ref, () => {
+    return {
+      redirect: (newTab) => toSearch(newTab)
+    }
+  })
+
   return (
     <div
       className='cursor-pointer rounded-full p-1.5 text-2xl hover:bg-neutral-500/20'
+      onClick={() => toSearch()}
+      tabIndex={0}
+      {...mouseLongPress}
     >
       <Icon
         icon='heroicons-outline:search'
       />
     </div>
   )
-}
+})
 
+SearchRedirect.displayName = 'SearchRedirect'
+
+/**
+ * Search
+ */
 export const Search = () => {
 
-  const [value, setValue] = useState('')
+  const [value, setValue] = useStateCallback('')
 
   const [keyword, setKeyword] = useState('')
 
   const { searchEngine } = useSearchEngineStore()
 
-  const { suggestionResult } = useJSONP(searchEngine, keyword)
+  const { suggestionResult } = useSuggestion(searchEngine, keyword)
 
   const timer = useRef<ReturnType<typeof setTimeout>>()
 
   const [selectIndex, setSelectIndex] = useState(-1)
+
+  const searchEngineRef = useRef<SearchEngineRef>(null)
+
+  const searchRedirectRef = useRef<SearchRedirectRef>(null)
 
   useEffect(() => {
     if (value.trim() === '') {
@@ -128,39 +195,53 @@ export const Search = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 
-    if (suggestionResult.length <= 0) return
+    if ((suggestionResult.length <= 0) || (value.trim() === '')) return
 
-    if (event.code === 'ArrowDown' && event.key === 'ArrowDown') {
-      setSelectIndex((prev) => {
-        const p = (prev >= (suggestionResult.length - 1)) ? 0 : ++prev
+    switch (event.key) {
+      case 'ArrowDown':
+        setSelectIndex((prev) => {
+          const index = (prev >= (suggestionResult.length - 1)) ? 0 : ++prev
 
-        setValue(suggestionResult[p])
+          setValue(suggestionResult[index])
 
-        return p
-      })
-    } else if (event.code === 'ArrowUp' && event.key === 'ArrowUp') {
+          return index
+        })
+        break
+      case 'ArrowUp':
+        event.preventDefault()
+        setSelectIndex((prev) => {
+          const index = (prev <= 0) ? (suggestionResult.length - 1) : --prev
 
-      event.preventDefault()
+          setValue(suggestionResult[index])
 
-      setSelectIndex((prev) => {
-        const p = (prev <= 0) ? (suggestionResult.length - 1) : --prev
-
-        setValue(suggestionResult[p])
-
-        return p
-      })
+          return index
+        })
+        break
+      case 'Enter':
+        (event.ctrlKey) ? searchRedirectRef.current?.redirect(true) : searchRedirectRef.current?.redirect()
+        return
     }
+  }
+
+  const a = () => 123
+
+  const [_, set_] = useStateCallback(a)
+
+  const handleSuggestionClick = (value: string) => {
+    set_(456).then((e) => console.log(e))
   }
 
   return (
     <div
       className={clsx([
         'relative flex w-96 items-center gap-x-1 px-2 py-1.5 dark:bg-neutral-800',
-        (((suggestionResult.length) > 0) ? 'rounded-t-lg' : 'rounded-lg')
+        ((suggestionResult.length > 0) ? 'rounded-t-lg' : 'rounded-lg')
       ])}
       tabIndex={0}
     >
-      <SearchEngine />
+      <SearchEngine
+        ref={searchEngineRef}
+      />
       {/* Input */}
       <div
         className='flex-1'
@@ -190,7 +271,11 @@ export const Search = () => {
         />
       </div>
       {/* Search */}
-      <SearchJump />
+      <SearchRedirect
+        ref={searchRedirectRef}
+        url={searchEngineRef.current?.url}
+        value={value}
+      />
       {/* Suggestion */}
       <div
         className={clsx([
@@ -209,6 +294,7 @@ export const Search = () => {
                   { 'bg-neutral-500/20': (selectIndex === index) }
                 ])}
                 key={item}
+                onClick={() => handleSuggestionClick(item)}
                 onMouseEnter={() => setSelectIndex(index)}
                 onMouseLeave={() => setSelectIndex(-1)}
               >
