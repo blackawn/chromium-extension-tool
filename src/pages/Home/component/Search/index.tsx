@@ -131,7 +131,7 @@ const SearchRedirect = forwardRef<SearchRedirectRef, SearchRedirectProps>((props
 
   const mouseLongPress = useMouseLongPress(() => toSearch(true))
 
-  //console.log('SearchRedirect')
+  console.log('SearchRedirect')
 
   useImperativeHandle(ref, () => {
     return {
@@ -143,7 +143,6 @@ const SearchRedirect = forwardRef<SearchRedirectRef, SearchRedirectProps>((props
     <div
       className='cursor-pointer rounded-full p-1.5 text-2xl hover:bg-neutral-500/20'
       onClick={() => toSearch()}
-      tabIndex={0}
       {...mouseLongPress}
     >
       <Icon
@@ -175,6 +174,10 @@ export const Search = () => {
   const searchEngineRef = useRef<SearchEngineRef>(null)
 
   const searchRedirectRef = useRef<SearchRedirectRef>(null)
+
+  const mouseLongPress = useMouseLongPress(() => {
+    searchRedirectRef.current?.redirect(true)
+  })
 
   useEffect(() => {
     if (value.trim() === '') {
@@ -223,12 +226,10 @@ export const Search = () => {
     }
   }
 
-  const a = () => 123
-
-  const [_, set_] = useStateCallback(a)
-
   const handleSuggestionClick = (value: string) => {
-    set_(456).then((e) => console.log(e))
+    setValue(value, () => {
+      searchRedirectRef.current?.redirect()
+    })
   }
 
   return (
@@ -248,6 +249,7 @@ export const Search = () => {
       >
         <input
           autoComplete=''
+          autoFocus={true}
           className='h-full w-full bg-transparent text-base tracking-wide outline-none'
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setKeyword(value)}
@@ -297,6 +299,7 @@ export const Search = () => {
                 onClick={() => handleSuggestionClick(item)}
                 onMouseEnter={() => setSelectIndex(index)}
                 onMouseLeave={() => setSelectIndex(-1)}
+                {...mouseLongPress}
               >
                 <span>
                   {item}
