@@ -1,7 +1,9 @@
+import type { SuggestionResultList } from '@/hooks/useSuggestion/types'
+
 export interface SearchSuggestionProps extends
   Pick<React.DOMAttributes<HTMLDivElement>, | 'onMouseLeave'> {
-  data: Array<string>
+  data: SuggestionResultList
   selected: number
-  onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, keyword: string) => void
-  onMouseEnter: (index: number) => void
+  onClick?: (event: React.MouseEvent, keyword: string) => void
+  onMouseEnter?: (index: number) => void
 }

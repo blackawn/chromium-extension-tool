@@ -9,6 +9,8 @@ export const SearchRedirect = memo((props: SearchRedirectProps) => {
 
   const { onClick } = props
 
+  console.log('SearchRedirect')
+
   return (
     <div
       className='cursor-pointer rounded-full p-1.5 text-2xl hover:bg-neutral-500/20'

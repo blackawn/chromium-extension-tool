@@ -1,3 +1,5 @@
+export type SuggestionResultList = Array<string> | undefined
+
 export interface BaiduCallback {
   p: boolean,
   q: string,

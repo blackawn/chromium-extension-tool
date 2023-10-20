@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { BaiduCallback, BingCallback, GoogleCallback } from './types'
+import type { BaiduCallback, BingCallback, GoogleCallback, SuggestionResultList } from './types'
 import { storeSearchEngine } from '@/store/searchEngine'
 import axios from 'axios'
 import json5 from 'json5'
@@ -8,11 +8,11 @@ export function useSuggestion(keyword: string) {
 
   const { searchEngine = 'baidu' } = storeSearchEngine()
 
-  const [suggestionResult, setSuggestionResult] = useState<Array<string>>([])
+  const [suggestionResult, setSuggestionResult] = useState<SuggestionResultList>(undefined)
 
   useEffect(() => {
 
-    if (keyword.trim() === '') return setSuggestionResult([])
+    if (keyword.trim() === '') return setSuggestionResult(undefined)
 
     const timer = setTimeout(() => {
 

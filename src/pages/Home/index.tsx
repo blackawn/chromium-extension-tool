@@ -7,7 +7,7 @@ export default function Home() {
       className='flex h-full'
     >
       <div
-        className='mt-80'
+        className='mt-80 flex w-[466px] flex-col'
       >
         <Search />
         <SearchHistory />

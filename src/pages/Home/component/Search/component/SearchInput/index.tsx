@@ -11,6 +11,8 @@ export const SearchInput = memo((props: SearchInputProps) => {
     ...other
   } = props
 
+  console.log('SearchInput')
+
   return (
     <div
       className='flex flex-1 items-center'
@@ -36,7 +38,7 @@ export const SearchInput = memo((props: SearchInputProps) => {
           'flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-xl duration-300 hover:bg-neutral-500/20',
           ((value?.toString().trim() !== '') ? 'visible scale-100 opacity-100' : 'invisible scale-0 opacity-0')
         ])}
-        onClick={() => onClear && onClear()}
+        onClick={onClear}
       >
         <Icon
           icon='ic:round-close'

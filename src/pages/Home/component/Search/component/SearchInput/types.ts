@@ -4,5 +4,5 @@ export interface SearchEngineRef {
 
 export interface SearchInputProps extends
   React.InputHTMLAttributes<HTMLInputElement> {
-  onClear?: React.MouseEventHandler<HTMLDivElement> | undefined
+  onClear?: (event: React.MouseEvent) => void
 }

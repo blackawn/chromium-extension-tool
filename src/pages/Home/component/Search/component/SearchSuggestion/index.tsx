@@ -6,18 +6,20 @@ export const SearchSuggestion = memo((props: SearchSuggestionProps) => {
 
   const { data, selected, onMouseEnter, onMouseLeave, onClick } = props
 
+  console.log('SearchSuggestion')
+
   return (
     <div
       className={clsx([
-        'absolute left-0 top-full w-full rounded-b-lg bg-neutral-800 pb-2',
-        ((data.length) ? 'visible opacity-100' : 'invisible opacity-0')
+        'absolute left-0 top-full w-full rounded-b-lg bg-neutral-800',
+        (data ? 'visible pb-2 opacity-100' : 'invisible opacity-0')
       ])}
     >
       <div
         className='flex max-h-96 flex-col overflow-x-hidden'
       >
         {
-          data.map((item, index) => (
+          data?.map((item, index) => (
             <div
               className={clsx([
                 'flex cursor-pointer items-center justify-between px-4 py-1',
@@ -37,7 +39,7 @@ export const SearchSuggestion = memo((props: SearchSuggestionProps) => {
           ))
         }
       </div>
-    </div>
+    </div >
   )
 })
 

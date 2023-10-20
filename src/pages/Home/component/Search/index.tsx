@@ -3,7 +3,7 @@ import { SearchInput } from './component/SearchInput'
 import { SearchRedirect } from './component/SearchRedirect'
 import { SearchSuggestion } from './component/SearchSuggestion'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import { useStateCallback } from '@/hooks/useStateCallback'
 import { useSuggestion } from '@/hooks/useSuggestion'
@@ -20,7 +20,7 @@ export const Search = () => {
 
   const { suggestionResult } = useSuggestion(keyword)
 
-  const { toRedirect } = useRedirect()
+  const { searchEngine, toRedirect } = useRedirect()
 
   const [selectedIndex, setSelectedIndex] = useState(-1)
 
@@ -28,9 +28,9 @@ export const Search = () => {
     setSelectedIndex(-1)
   }, [suggestionResult])
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
 
-    if (!suggestionResult.length || !value.trim()) return
+    if (!suggestionResult || !value.trim()) return
 
     switch (event.key) {
       case 'ArrowDown':
@@ -56,41 +56,50 @@ export const Search = () => {
         (event.ctrlKey) ? toRedirect(value, true) : toRedirect(value)
         return
     }
-  }
+  }, [suggestionResult, value])
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value)
     setKeyword(event.target.value)
-  }
 
-  const onClear = ()=>{
+  }, [])
+
+  const onClear = useCallback(() => {
     setValue('')
     setKeyword('')
-  }
+  }, [])
 
-  const handleSearchSuggestionClick = (event: React.MouseEvent | React.KeyboardEvent, keyword: string) => {
+  const handleSearchSuggestionClick = useCallback((event: React.MouseEvent | React.KeyboardEvent, keyword: string) => {
     if (event.ctrlKey) {
       toRedirect(keyword, true)
     } else {
       toRedirect(keyword)
     }
-  }
+  }, [keyword])
 
-  const handleSearchRedirectClick = (event: React.MouseEvent | React.KeyboardEvent) => {
+  const handleSearchRedirectClick = useCallback((event: React.MouseEvent | React.KeyboardEvent) => {
     if (event.ctrlKey) {
       toRedirect(value, true)
     } else {
       toRedirect(value)
     }
-  }
+  }, [searchEngine, value])
+
+  const handleSearchSuggestionMouseEnter = useCallback((index: number) => {
+    setSelectedIndex(index)
+  }, [])
+
+  const handleSearchSuggestionMouseLeave = useCallback(() => {
+    setSelectedIndex(-1)
+  }, [])
 
   console.log('layout')
 
   return (
     <div
       className={clsx([
-        'relative flex w-[466px] items-center gap-x-1 px-2 py-1.5 dark:bg-neutral-800',
-        ((suggestionResult.length > 0) ? 'rounded-t-lg' : 'rounded-lg')
+        'relative flex items-center gap-x-1 px-2 py-1.5 dark:bg-neutral-800',
+        (suggestionResult ? 'rounded-t-lg' : 'rounded-lg')
       ])}
       tabIndex={0}
     >
@@ -98,10 +107,8 @@ export const Search = () => {
       <SearchEngine />
       {/* Input */}
       <SearchInput
-        onBlur={() => setKeyword('')}
         onChange={onChange}
         onClear={onClear}
-        onFocus={() => setKeyword(value)}
         onKeyDown={handleKeyDown}
         value={value}
       />
@@ -112,9 +119,9 @@ export const Search = () => {
       {/* Suggestion */}
       <SearchSuggestion
         data={suggestionResult}
-        onClick={(e, keyword) => handleSearchSuggestionClick(e, keyword)}
-        onMouseEnter={(index) => setSelectedIndex(index)}
-        onMouseLeave={() => setSelectedIndex(-1)}
+        onClick={handleSearchSuggestionClick}
+        onMouseEnter={handleSearchSuggestionMouseEnter}
+        onMouseLeave={handleSearchSuggestionMouseLeave}
         selected={selectedIndex}
       />
     </div>

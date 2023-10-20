@@ -37,6 +37,7 @@ export const useRedirect = () => {
   }
 
   return {
-    toRedirect
+    toRedirect,
+    searchEngine
   }
 }

@@ -25,6 +25,8 @@ export const SearchEngine = memo(() => {
 
   const { searchEngine, modifySearchEngine } = storeSearchEngine()
 
+  console.log('SearchEngine')
+
   return (
     <div
       className='group relative flex select-none items-center'
