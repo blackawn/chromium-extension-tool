@@ -1,11 +1,17 @@
 import { Search } from './component/Search'
+import { SearchHistory } from './component/SearchHistory'
 
 export default function Home() {
   return (
     <div
-      className='flex h-full items-center'
+      className='flex h-full'
     >
-      <Search />
+      <div
+        className='mt-80'
+      >
+        <Search />
+        <SearchHistory />
+      </div>
     </div>
   )
 }

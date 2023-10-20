@@ -42,6 +42,7 @@ module.exports = {
     
     //
     'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
     'react/jsx-closing-bracket-location': [1, 'line-aligned'],
     'react/jsx-closing-tag-location': 'warn',
     'react/jsx-curly-newline': ['warn', { 'multiline': 'consistent', 'singleline': 'consistent' }],
@@ -69,6 +70,7 @@ module.exports = {
     'react/no-direct-mutation-state': 'error',
     'react/no-typos': 'error',
     'react/no-unescaped-entities': 'error',
+
 
     //
     'react-hooks/rules-of-hooks': 'error',

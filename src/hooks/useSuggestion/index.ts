@@ -1,72 +1,66 @@
 import { useEffect, useState } from 'react'
-import type { SearchEngineName } from '@/store/searchEngine/types'
+import type { BaiduCallback, BingCallback, GoogleCallback } from './types'
+import { storeSearchEngine } from '@/store/searchEngine'
+import axios from 'axios'
+import json5 from 'json5'
 
-export function useSuggestion(engine: SearchEngineName = 'baidu', value: string) {
+export function useSuggestion(keyword: string) {
+
+  const { searchEngine = 'baidu' } = storeSearchEngine()
 
   const [suggestionResult, setSuggestionResult] = useState<Array<string>>([])
 
   useEffect(() => {
 
-    if (value.trim() === '') return setSuggestionResult([])
+    if (keyword.trim() === '') return setSuggestionResult([])
 
-    window.searchEngine = {
-      baidu(result) {
-        if (result.s) {
-          setSuggestionResult(result.s)
-        }
-      },
-      bing(result) {
-        if (result.AS.FullResults) {
-          const mergeResult = result.AS.Results.map((suggest) => {
-            return suggest.Suggests.map((item) => item.Txt)
-          })
+    const timer = setTimeout(() => {
 
-          setSuggestionResult(mergeResult.flat())
-        }
-      },
-      google(result) {
-        if (result[1]) {
-          setSuggestionResult(result[1])
-        }
-      },
-    }
+      switch (searchEngine) {
+        case 'baidu':
+          axios.get(`https://suggestion.baidu.com/su?wd=${keyword}&p=true`)
+            .then((result) => {
+              const replaceResult = result.data.replace('window.baidu.sug(', '').replace(');', '')
+              const paresResult = json5.parse(replaceResult) as BaiduCallback
+              if (paresResult.s) {
+                setSuggestionResult(paresResult.s)
+              }
+            })
+          break
+        case 'bing':
+          axios.get(`https://api.bing.com/qsonhs.aspx?type=cb&q=${keyword}`)
+            .then((result) => {
+              const replaceResult = result.data.replace('if(typeof  == \'function\') (', '').replace('/* pageview_candidate */);', '')
+              const paresResult = json5.parse(replaceResult) as BingCallback
+              if (paresResult.AS.FullResults) {
+                const mergeResult = paresResult.AS.Results.map((suggest) => {
+                  return suggest.Suggests.map((item) => item.Txt)
+                })
 
-    const scriptNode = document.createElement('script')
+                setSuggestionResult(mergeResult.flat())
+              }
+            })
+          break
+        case 'google':
+          axios.get(`https://suggestqueries.google.com/complete/search?output=toolbar&client=chrome&q=${keyword}`)
+            .then((result) => {
+              const data = result.data as GoogleCallback
+              if (data[1]) {
+                setSuggestionResult(data[1])
+              }
+            })
+          break
+        default:
+          break
+      }
 
-    switch (engine) {
-      case 'baidu':
-        scriptNode.src = `https://suggestion.baidu.com/su?wd=${value}&p=true&cb=window.searchEngine.baidu`
-        break
-      case 'bing':
-        scriptNode.src = `https://api.bing.com/qsonhs.aspx?type=cb&q=${value}&cb=window.searchEngine.bing`
-        break
-      case 'google':
-        scriptNode.src = `https://suggestqueries.google.com/complete/search?output=toolbar&client=chrome&q=${value}&jsonp=window.searchEngine.google`
-        break
-      default:
-        break
-    }
-
-    document.body.appendChild(scriptNode)
-
-    scriptNode.onload = () => {
-      console.log('加载完成')
-      scriptNode.remove()
-    }
-
-    scriptNode.onerror = () => {
-      console.log('加载失败')
-      setSuggestionResult([])
-      scriptNode.remove()
-    }
+    }, 300)
 
     return () => {
-      if (scriptNode) {
-        scriptNode.remove()
-      }
+      clearTimeout(timer)
     }
 
-  }, [engine, value])
+  }, [searchEngine, keyword])
 
   return {
     suggestionResult

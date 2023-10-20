@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome extension tool",
+  "version": "1.0.0",
+  "description": "A chrome extension tool",
+  "author": "Black awn",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.ts"
+      ]
+    }
+  ],
+  "externally_connectable": {
+    "matches": [
+      "<all_urls>"
+    ]
+  },
+  "background": {
+    "service_worker": "background.ts"
+  },
+  "icons": {
+
+  },
+  "permissions": [
+    "bookmarks",
+    "storage"
+  ],
+  "web_accessible_resources": [
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
