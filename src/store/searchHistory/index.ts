@@ -20,7 +20,7 @@ export const storeSearchHistory = create<SearchHistory>()(
       searchHistory: [],
       addSearchHistory: (keyword) => set((state) => {
 
-        const isExist = state.searchHistory.findIndex((item) => item.keyword === keyword)
+        const isExist = state.searchHistory?.findIndex((item) => item.keyword === keyword)
 
         const historyResult = [...state.searchHistory]
 

@@ -2,7 +2,9 @@ import { storeSearchHistory } from '@/store/searchHistory'
 import { useRedirect } from '@/hooks/useRedirect'
 
 export const SearchHistory = () => {
+
   const { searchHistory } = storeSearchHistory()
+  
   const { toRedirect } = useRedirect()
 
   const handleSearchHistoryRedirect = (event: React.MouseEvent | React.KeyboardEvent, keyword: string) => {
@@ -15,7 +17,7 @@ export const SearchHistory = () => {
 
   return (
     <div
-      className='mt-3 flex flex-wrap gap-2'
+      className='mt-3 flex flex-wrap gap-2 p-1'
     >
       {
         searchHistory?.map((item) => (

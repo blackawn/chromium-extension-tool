@@ -2,6 +2,7 @@ import { Search } from './component/Search'
 import { SearchHistory } from './component/SearchHistory'
 
 export default function Home() {
+
   return (
     <div
       className='flex h-full'

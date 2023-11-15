@@ -5,7 +5,6 @@ import { SearchSuggestion } from './component/SearchSuggestion'
 
 import { useCallback, useEffect, useState } from 'react'
 import { clsx } from 'clsx'
-import { useStateCallback } from '@/hooks/useStateCallback'
 import { useSuggestion } from '@/hooks/useSuggestion'
 import { useRedirect } from '@/hooks/useRedirect'
 
@@ -14,15 +13,15 @@ import { useRedirect } from '@/hooks/useRedirect'
  */
 export const Search = () => {
 
-  const [value, setValue] = useStateCallback('')
+  const [value, setValue] = useState('')
 
   const [keyword, setKeyword] = useState('')
 
-  const { suggestionResult } = useSuggestion(keyword)
-
-  const { searchEngine, toRedirect } = useRedirect()
-
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  
+  const { suggestionResult } = useSuggestion(keyword)
+  
+  const { searchEngine, toRedirect } = useRedirect()
 
   useEffect(() => {
     setSelectedIndex(-1)
