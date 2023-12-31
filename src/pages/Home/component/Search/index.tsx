@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import { useSuggestion } from '@/hooks/useSuggestion'
 import { useRedirect } from '@/hooks/useRedirect'
+import { storeSearchHistory } from '@/store/searchHistory'
 
 /**
  * Search
@@ -18,10 +19,12 @@ export const Search = () => {
   const [keyword, setKeyword] = useState('')
 
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  
+
   const { suggestionResult } = useSuggestion(keyword)
-  
+
   const { searchEngine, toRedirect } = useRedirect()
+
+  const { clearSearchHistory } = storeSearchHistory()
 
   useEffect(() => {
     setSelectedIndex(-1)
@@ -29,31 +32,46 @@ export const Search = () => {
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
 
-    if (!suggestionResult || !value.trim()) return
+    if (!value.trim()) return
 
     switch (event.key) {
       case 'ArrowDown':
-        setSelectedIndex((prev) => {
-          const index = (prev >= (suggestionResult.length - 1)) ? 0 : ++prev
+        if (suggestionResult?.length) {
+          setSelectedIndex((prev) => {
+            const index = (prev >= (suggestionResult.length - 1)) ? 0 : ++prev
 
-          setValue(suggestionResult[index])
+            setValue(suggestionResult[index])
 
-          return index
-        })
+            return index
+          })
+        }
+
         break
       case 'ArrowUp':
         event.preventDefault()
-        setSelectedIndex((prev) => {
-          const index = (prev <= 0) ? (suggestionResult.length - 1) : --prev
+        if (suggestionResult?.length) {
+          setSelectedIndex((prev) => {
+            const index = (prev <= 0) ? (suggestionResult.length - 1) : --prev
 
-          setValue(suggestionResult[index])
+            setValue(suggestionResult[index])
 
-          return index
-        })
+            return index
+          })
+        }
         break
-      case 'Enter':
+      case 'Enter': {
+
+        if (value === '--clear --history') {
+          clearSearchHistory()
+          setValue('')
+          setKeyword('')
+          return
+        }
+
         (event.ctrlKey) ? toRedirect(value, true) : toRedirect(value)
-        return
+        break
+      }
+
     }
   }, [suggestionResult, value])
 
@@ -98,7 +116,7 @@ export const Search = () => {
     <div
       className={clsx([
         'relative flex items-center gap-x-1 px-2 py-1.5 dark:bg-neutral-800',
-        (suggestionResult ? 'rounded-t-lg' : 'rounded-lg')
+        (suggestionResult?.length ? 'rounded-t-lg' : 'rounded-lg')
       ])}
       tabIndex={0}
     >

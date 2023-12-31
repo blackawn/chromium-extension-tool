@@ -17,9 +17,12 @@ export const SearchHistory = () => {
 
   return (
     <div
-      className='mt-3 flex flex-wrap gap-2 p-1'
+      className='mt-3 h-[56vh] overflow-x-hidden'
     >
-      {
+      <div
+        className='flex flex-wrap gap-2 p-1'
+      >
+        {
         searchHistory?.map((item) => (
           <div
             className='cursor-pointer rounded-sm px-2 py-1 text-sm duration-200 hover:bg-neutral-700 dark:bg-neutral-800'
@@ -30,6 +33,7 @@ export const SearchHistory = () => {
           </div>
         ))
       }
+      </div>
     </div>
   )
 } 

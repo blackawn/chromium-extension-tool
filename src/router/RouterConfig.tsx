@@ -1,7 +1,6 @@
 import { createHashRouter, Navigate } from 'react-router-dom'
 import { lazy } from 'react'
 import Home from '@/pages/Home'
-import Login from '@/pages/Login'
 import RouterGuard from './RouterGuard'
 
 const LazyLayout = lazy(() => import('@/layout'))
@@ -24,11 +23,7 @@ const Config = createHashRouter([
           {
             path: 'home',
             element: <Home />
-          },
-          {
-            path: 'login',
-            element: <Login />
-          },
+          }
         ]
       }
     ]

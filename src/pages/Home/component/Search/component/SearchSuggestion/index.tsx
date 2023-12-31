@@ -12,7 +12,7 @@ export const SearchSuggestion = memo((props: SearchSuggestionProps) => {
     <div
       className={clsx([
         'absolute left-0 top-full w-full rounded-b-lg bg-neutral-800',
-        (data ? 'visible pb-2 opacity-100' : 'invisible opacity-0')
+        (data?.length ? 'visible pb-2 opacity-100' : 'invisible opacity-0')
       ])}
     >
       <div

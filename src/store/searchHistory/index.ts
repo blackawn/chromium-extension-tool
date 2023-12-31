@@ -12,6 +12,7 @@ export interface SearchKeyword {
 interface SearchHistory {
   searchHistory: Array<SearchKeyword>
   addSearchHistory: (keyword: string) => void
+  clearSearchHistory: () => void
 }
 
 export const storeSearchHistory = create<SearchHistory>()(
@@ -27,7 +28,7 @@ export const storeSearchHistory = create<SearchHistory>()(
         if (isExist !== -1) {
           historyResult.splice(isExist, 1)
         }
-        
+
         historyResult.unshift({
           keyword: keyword,
           count: state.searchHistory[isExist]?.count + 1 || 1,
@@ -38,6 +39,11 @@ export const storeSearchHistory = create<SearchHistory>()(
           searchHistory: historyResult
         }
       }),
+      clearSearchHistory: () => set(() => {
+        return {
+          searchHistory: []
+        }
+      })
     })),
     {
       name: 'searchHistory-storage',
