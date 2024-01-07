@@ -13,7 +13,7 @@ export const SearchRedirect = memo((props: SearchRedirectProps) => {
 
   return (
     <div
-      className='cursor-pointer rounded-full p-1.5 text-2xl hover:bg-neutral-500/20'
+      className='cursor-pointer rounded-full p-1.5 text-2xl hover:bg-neutral-200/80 dark:hover:bg-neutral-500/20'
       onClick={onClick}
     >
       <Icon

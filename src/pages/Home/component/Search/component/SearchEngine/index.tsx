@@ -33,7 +33,7 @@ export const SearchEngine = memo(() => {
       tabIndex={0}
     >
       <div
-        className='h-10 w-10 cursor-pointer rounded-full p-1.5 hover:bg-neutral-500/20'
+        className='h-10 w-10 cursor-pointer rounded-full p-1.5 hover:bg-neutral-200/80 dark:hover:bg-neutral-500/20'
       >
         <img
           alt=''

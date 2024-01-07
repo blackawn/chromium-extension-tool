@@ -115,7 +115,7 @@ export const Search = () => {
   return (
     <div
       className={clsx([
-        'relative flex items-center gap-x-1 px-2 py-1.5 dark:bg-neutral-800',
+        'relative flex items-center gap-x-1 bg-neutral-50 px-2 py-1.5 dark:bg-neutral-800',
         (suggestionResult?.length ? 'rounded-t-lg' : 'rounded-lg')
       ])}
       tabIndex={0}

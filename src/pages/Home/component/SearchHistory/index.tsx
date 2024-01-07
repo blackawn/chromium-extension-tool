@@ -25,7 +25,7 @@ export const SearchHistory = () => {
         {
         searchHistory?.map((item) => (
           <div
-            className='cursor-pointer rounded-sm px-2 py-1 text-sm duration-200 hover:bg-neutral-700 dark:bg-neutral-800'
+            className='cursor-pointer rounded-sm bg-neutral-50 px-2 py-1 text-sm duration-200 hover:bg-white dark:bg-neutral-800 dark:hover:bg-neutral-700'
             key={item.keyword}
             onClick={(e) => handleSearchHistoryRedirect(e, item.keyword)}
           >

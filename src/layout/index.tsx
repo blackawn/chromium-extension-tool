@@ -1,21 +1,18 @@
-import Header from '@/layout/Header'
-import Aside from '@/layout/Aside'
+import Header from './Header'
 import Main from '@/layout/Main'
-import Footer from '@/layout/Footer'
+import texture from '@/assets/texture.png'
 
 export default function Shared() {
   return (
     <div
-      className='flex h-screen w-screen overflow-hidden dark:bg-neutral-900'
+      className='x h-screen w-screen overflow-hidden bg-neutral-100 dark:bg-neutral-900'
+      style={{
+        backgroundImage: `url(${texture})`
+      }}
     >
-      <div
-        className='flex flex-1 flex-col'
-      >
-        <div
-          className='flex-1'
-        >
-          <Main />
-        </div>
+      <div>
+        <Header />
+        <Main />
       </div>
     </div>
   )

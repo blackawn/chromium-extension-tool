@@ -11,7 +11,7 @@ export const SearchSuggestion = memo((props: SearchSuggestionProps) => {
   return (
     <div
       className={clsx([
-        'absolute left-0 top-full w-full rounded-b-lg bg-neutral-800',
+        'absolute left-0 top-full w-full rounded-b-lg bg-neutral-50 dark:bg-neutral-800',
         (data?.length ? 'visible pb-2 opacity-100' : 'invisible opacity-0')
       ])}
     >
@@ -23,7 +23,7 @@ export const SearchSuggestion = memo((props: SearchSuggestionProps) => {
             <div
               className={clsx([
                 'flex cursor-pointer items-center justify-between px-4 py-1',
-                { 'bg-neutral-500/20': (selected === index) }
+                { 'bg-neutral-200/80 dark:bg-neutral-500/20': (selected === index) }
               ])}
               key={item}
               onClick={(e) => onClick && onClick(e, item)}
