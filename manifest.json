@@ -18,6 +18,14 @@
       "js": [
         "content.ts"
       ]
+    },
+    {
+      "matches": [
+        "*://*.csdn.net/*"
+      ],
+      "js": [
+        "/src/content-scripts/csdn.ts"
+      ]
     }
   ],
   "externally_connectable": {
