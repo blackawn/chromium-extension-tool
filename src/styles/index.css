@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base{
-  body{
+@layer base {
+  body {
     @apply text-neutral-700 dark:text-neutral-400
   }
 
@@ -15,11 +15,30 @@
     @apply w-1 h-1 bg-transparent;
 
   }
+
   ::-webkit-scrollbar-thumb {
     @apply rounded-full bg-neutral-700;
   }
 
   .dark::-webkit-scrollbar-thumb {
     @apply rounded-full bg-neutral-700;
+  }
+
+  ::view-transition-image-pair(root) {
+    isolation: auto;
+  }
+  
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+    display: block;
+  }
+  
+}
+
+@layer utilities {
+  [tabIndex] {
+    @apply outline-none
   }
 }

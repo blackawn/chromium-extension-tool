@@ -33,11 +33,11 @@ export const SearchEngine = memo(() => {
       tabIndex={0}
     >
       <div
-        className='h-10 w-10 cursor-pointer rounded-full p-1.5 hover:bg-neutral-200/80 dark:hover:bg-neutral-500/20'
+        className='size-10 cursor-pointer rounded-full p-1.5 hover:bg-neutral-200/80 dark:hover:bg-neutral-500/20'
       >
         <img
           alt=''
-          className='h-full w-full object-cover'
+          className='size-full object-cover'
           src={searchEngineList[searchEngine].icon}
         />
       </div>
@@ -56,7 +56,7 @@ export const SearchEngine = memo(() => {
           {(Object.keys(searchEngineList) as SearchEngineName[]).map((item) => (
             <div
               className={clsx([
-                'h-7 w-7 cursor-pointer duration-300',
+                'size-7 cursor-pointer duration-300',
                 (searchEngine === item ? 'grayscale-0' : 'grayscale-[0.95]')
               ])}
               key={item}
@@ -64,7 +64,7 @@ export const SearchEngine = memo(() => {
             >
               <img
                 alt=''
-                className='h-full w-full object-cover'
+                className='size-full object-cover'
                 src={searchEngineList[item].icon}
               />
             </div>

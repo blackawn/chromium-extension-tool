@@ -24,7 +24,7 @@ export const SearchInput = memo((props: SearchInputProps) => {
         <input
           autoComplete=''
           autoFocus={true}
-          className='h-full w-full bg-transparent text-base tracking-wide outline-none'
+          className='size-full bg-transparent text-base tracking-wide outline-none'
           placeholder=''
           type='text'
           value={value}
@@ -35,7 +35,7 @@ export const SearchInput = memo((props: SearchInputProps) => {
       {/* Clear */}
       <div
         className={clsx([
-          'flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-xl duration-300 hover:bg-neutral-200/80 dark:hover:bg-neutral-500/20',
+          'flex size-8 cursor-pointer items-center justify-center rounded-full text-xl duration-300 hover:bg-neutral-200/80 dark:hover:bg-neutral-500/20',
           ((value?.toString().trim() !== '') ? 'visible scale-100 opacity-100' : 'invisible scale-0 opacity-0')
         ])}
         onClick={onClear}
