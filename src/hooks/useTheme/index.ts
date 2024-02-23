@@ -40,10 +40,9 @@ export const useTheme = (auto = true) => {
 
     if (initial.current) {
       initial.current = false
-    } else {
-      if (auto) {
-        modifyClass()
-      }
+      modifyClass()
+    } else if (auto) {
+      modifyClass()
     }
 
   }, [theme])
@@ -59,7 +58,7 @@ export const useTheme = (auto = true) => {
     window.addEventListener('storage', modifyTheme)
 
     return () => {
-      
+
       mediaQuery.removeEventListener('change', modifyClass)
 
       window.removeEventListener('storage', modifyTheme)

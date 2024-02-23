@@ -29,7 +29,7 @@ export const SearchEngine = memo(() => {
 
   return (
     <div
-      className='group relative flex select-none items-center'
+      className='group relative flex select-none items-center rounded-full'
       tabIndex={0}
     >
       <div
